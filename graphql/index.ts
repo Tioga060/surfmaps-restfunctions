@@ -14,7 +14,6 @@ interface IQuery {
     variables: any;
 }
 
-const connectionString = 'postgres://postgres:a@localhost:5432/postgres';
 const schemaName = 'public';
 
 const httpTrigger: AzureFunction = async function (context: Context, req: HttpRequest): Promise<void> {
@@ -28,7 +27,7 @@ const httpTrigger: AzureFunction = async function (context: Context, req: HttpRe
             }
         });
         await Promise.all(queries.map((query) => {
-            execute(jwtToken, query.query, connectionString, schemaName, query.variables);
+            execute(jwtToken, query.query, process.env.PostgresConnectionString, schemaName, query.variables);
         }));
         context.res = {
             body: 'Sucessfully committed',
@@ -38,8 +37,8 @@ const httpTrigger: AzureFunction = async function (context: Context, req: HttpRe
             body: await execute(
                 jwtToken,
                 req.body.query,
-                'postgres://postgres:a@localhost:5432/postgres',
-                'public',
+                process.env.PostgresConnectionString,
+                schemaName,
                 req.body.variables),
         }
     } else {

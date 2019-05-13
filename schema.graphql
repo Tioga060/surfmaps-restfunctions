@@ -2154,6 +2154,7 @@ type Image implements Node {
   storeLocation: String!
   uploaderId: UUID!
   uploadedAt: Time!
+  isOrphan: Boolean!
 
   """Reads a single `User` that is related to this `Image`."""
   userByUploaderId: User
@@ -2232,6 +2233,9 @@ input ImageCondition {
 
   """Checks for equality with the object’s `uploadedAt` field."""
   uploadedAt: Time
+
+  """Checks for equality with the object’s `isOrphan` field."""
+  isOrphan: Boolean
 }
 
 """An input for mutations affecting `Image`"""
@@ -2240,6 +2244,7 @@ input ImageInput {
   storeLocation: String!
   uploaderId: UUID!
   uploadedAt: Time
+  isOrphan: Boolean
 }
 
 """
@@ -2250,6 +2255,7 @@ input ImagePatch {
   storeLocation: String
   uploaderId: UUID
   uploadedAt: Time
+  isOrphan: Boolean
 }
 
 """A connection to a list of `Image` values."""
@@ -2289,6 +2295,8 @@ enum ImagesOrderBy {
   UPLOADER_ID_DESC
   UPLOADED_AT_ASC
   UPLOADED_AT_DESC
+  IS_ORPHAN_ASC
+  IS_ORPHAN_DESC
   PRIMARY_KEY_ASC
   PRIMARY_KEY_DESC
 }

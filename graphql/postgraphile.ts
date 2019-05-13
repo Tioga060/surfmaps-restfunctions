@@ -12,7 +12,7 @@ const performQuery = async (
     return await withPostGraphQLContext({
         pgPool,
         jwtToken,
-        jwtSecret: 'KEYGOESHERETODO', // TODO
+        jwtSecret: process.env.JWT_SECRET, // TODO
     }, async (context) => {
         return await graphql(
             schema,
@@ -35,7 +35,7 @@ export const execute = async (
     const schema = await createPostGraphQLSchema(connectionString, schemaName, {
         classicIds: true,
         dynamicJson: true,
-        jwtSecret: 'KEYGOESHERETODO', // TODO
+        jwtSecret: process.env.JWT_SECRET, // TODO
         jwtPgTypeIdentifier: 'public.jwt_token',
     });
     const result = await(performQuery(pgPool, schema, query, variables, jwtToken));

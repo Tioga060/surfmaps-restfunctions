@@ -29,12 +29,12 @@ router.use('/graphql', authMiddleware);
 
 // Mount PostGraphile after this middleware
 router.use(postgraphile(
-    'postgres://postgres:a@localhost:5432/postgres',
+    process.env.PostgresConnectionString,
     {
         classicIds: true, // -a
         dynamicJson: true, // -j
         exportGqlSchemaPath: './schema.graphql', // TODO
-        jwtSecret: 'KEYGOESHERETODO', // TODO
+        jwtSecret: process.env.JWT_SECRET, // TODO
         jwtPgTypeIdentifier: 'public.jwt_token',
         graphiql: true, // TODO
         enableQueryBatching: true,
