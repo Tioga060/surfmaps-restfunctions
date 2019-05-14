@@ -27,7 +27,7 @@ const httpTrigger: AzureFunction = async function (context: Context, req: HttpRe
             }
         });
         await Promise.all(queries.map((query) => {
-            execute(jwtToken, query.query, process.env.PostgresConnectionString, schemaName, query.variables);
+            execute(jwtToken, query.query, process.env.PG_CONNECTION_STRING, schemaName, query.variables);
         }));
         context.res = {
             body: 'Sucessfully committed',
@@ -37,7 +37,7 @@ const httpTrigger: AzureFunction = async function (context: Context, req: HttpRe
             body: await execute(
                 jwtToken,
                 req.body.query,
-                process.env.PostgresConnectionString,
+                process.env.PG_CONNECTION_STRING,
                 schemaName,
                 req.body.variables),
         }
