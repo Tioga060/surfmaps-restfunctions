@@ -2,6 +2,8 @@ import { createPostGraphQLSchema, withPostGraphQLContext } from 'postgraphile';
 import { graphql } from 'graphql';
 import { Pool } from 'pg';
 
+const GQLSchemaLocation = `${__dirname}/../schema.graphql`;
+
 const performQuery = async (
     pgPool: Pool,
     schema: any,
@@ -19,7 +21,7 @@ const performQuery = async (
             query,
             null,
             {...context},
-            variables
+            variables,
         )
     })
 };
@@ -32,11 +34,13 @@ export const execute = async (
     variables: any = {},
 ) => {
     const pgPool = new Pool({connectionString});
-    const schema = await createPostGraphQLSchema(connectionString, schemaName, {
+    const schema = await createPostGraphQLSchema(undefined, schemaName, {
         classicIds: true,
         dynamicJson: true,
         jwtSecret: process.env.JWT_SECRET, // TODO
         jwtPgTypeIdentifier: 'public.jwt_token',
+        //writeCache: GQLSchemaLocation,
+        readCache: GQLSchemaLocation,
     });
     const result = await(performQuery(pgPool, schema, query, variables, jwtToken));
     return result;

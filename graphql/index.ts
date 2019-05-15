@@ -17,7 +17,6 @@ interface IQuery {
 const schemaName = 'public';
 
 const httpTrigger: AzureFunction = async function (context: Context, req: HttpRequest): Promise<void> {
-    context.log('HTTP trigger function processed a request.');
     const jwtToken = getJWT(req.headers.cookie || '');
     if (req.body && Array.isArray(req.body)) {
         const queries: IQuery[] = [];
