@@ -1,5 +1,5 @@
 import { AzureFunction, Context, HttpRequest } from "@azure/functions"
-import { execute } from './postgraphile';
+import { execute, IQuery } from './postgraphile';
 
 const getJWT = (cookieString: string) => {
     const cookies = cookieString.split('; ');
@@ -7,11 +7,6 @@ const getJWT = (cookieString: string) => {
     return tokenCookie
         ? tokenCookie.split('token=')[1]
         : '';
-}
-
-interface IQuery {
-    query: string;
-    variables: any;
 }
 
 const schemaName = 'public';
@@ -22,23 +17,23 @@ const httpTrigger: AzureFunction = async function (context: Context, req: HttpRe
         const queries: IQuery[] = [];
         req.body.forEach((query) => {
             if(query && query.query) {
-                queries.push({query: query.query, variables: query.variables});
+                queries.push({query: query.query, variables: query.variables, id: query.id});
             }
         });
-        await Promise.all(queries.map((query) => {
-            execute(jwtToken, query.query, process.env.PG_CONNECTION_STRING, schemaName, query.variables);
-        }));
+        const results = await Promise.all(queries.map((query) => (
+            execute(jwtToken, query, process.env.PG_CONNECTION_STRING, schemaName)
+        )));
         context.res = {
-            body: 'Sucessfully committed',
+            body: results,
         };
     } else if (req.body && req.body.query) {
+        const query = {query: req.body.query, variables: req.body.variables} as IQuery;
         context.res = {
             body: await execute(
                 jwtToken,
-                req.body.query,
+                query,
                 process.env.PG_CONNECTION_STRING,
-                schemaName,
-                req.body.variables),
+                schemaName),
         }
     } else {
         context.res = {

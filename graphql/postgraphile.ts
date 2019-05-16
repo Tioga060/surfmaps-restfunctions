@@ -1,5 +1,5 @@
 import { createPostGraphQLSchema, withPostGraphQLContext } from 'postgraphile';
-import { graphql } from 'graphql';
+import { graphql, ExecutionResult } from 'graphql';
 import { Pool } from 'pg';
 
 const GQLSchemaLocation = `${__dirname}/../schema.graphql`;
@@ -26,12 +26,21 @@ const performQuery = async (
     })
 };
 
+type IResultWithID = ExecutionResult & {
+    id: string;
+};
+
+export interface IQuery {
+    query: string;
+    variables: any;
+    id: string;
+}
+
 export const execute = async (
     jwtToken: string,
-    query: string,
+    query: IQuery,
     connectionString: string,
     schemaName: string = "public",
-    variables: any = {},
 ) => {
     const pgPool = new Pool({connectionString});
     const schema = await createPostGraphQLSchema(undefined, schemaName, {
@@ -42,6 +51,7 @@ export const execute = async (
         //writeCache: GQLSchemaLocation,
         readCache: GQLSchemaLocation,
     });
-    const result = await(performQuery(pgPool, schema, query, variables, jwtToken));
+    const result = await(performQuery(pgPool, schema, query.query, query.variables || {}, jwtToken)) as IResultWithID;
+    result.id = query.id;
     return result;
 }
