@@ -1,13 +1,9 @@
 import { AzureFunction, Context } from "@azure/functions"
 import {Pool} from 'pg';
 
-const ALLOWED_IMAGE_EXTENSIONS = [
-    '.jpeg',
-    '.JPEG',
-    '.jpg',
-    '.JPG',
-    '.png',
-    '.PNG',
+const ALLOWED_FILE_EXTENSIONS = [
+    '.bsp',
+    '.BSP',
 ];
 
 interface IEventGridEvent {
@@ -38,15 +34,15 @@ const eventGridTrigger: AzureFunction = async function (context: Context, eventG
     if (eventGridEvent && eventGridEvent.data && eventGridEvent.data.url) {
         const fileUrl = eventGridEvent.data.url;
         const eventType = eventGridEvent.eventType;
-        const isCorrectDataType = ALLOWED_IMAGE_EXTENSIONS.some(extension => (fileUrl.endsWith(extension)));
+        const isCorrectDataType = ALLOWED_FILE_EXTENSIONS.some(extension => (fileUrl.endsWith(extension)));
         if (eventType === EVENT_TYPE && isCorrectDataType) {
-            const [mapId, imageId] = fileUrl.split('/').slice(3);
-            if (mapId && mapId.length === 36 && imageId && imageId.length === 36) {
+            const [mapId, fileId] = fileUrl.split('/').slice(3);
+            if (mapId && mapId.length === 36 && fileId && fileId.length === 36) {
                 const pool = new Pool({
                     connectionString: process.env.PG_CONNECTION_STRING,
                 });
-                await pool.query('update public."Image" set "storeLocation" = $1 where "id" = $2', [fileUrl, imageId]);
-                context.log(`Bound ${fileUrl} to ${imageId}`);
+                await pool.query('update public."File" set "storeLocation" = $1 where "id" = $2', [fileUrl, fileId]);
+                context.log(`Bound ${fileUrl} to ${fileId}`);
             }
         }
     }
