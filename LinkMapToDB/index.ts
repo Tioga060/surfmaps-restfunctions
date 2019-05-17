@@ -29,6 +29,9 @@ interface IEventGridEvent {
 }
 
 const EVENT_TYPE = 'Microsoft.Storage.BlobCreated';
+const pool = new Pool({
+    connectionString: process.env.PG_CONNECTION_STRING,
+});
 
 const eventGridTrigger: AzureFunction = async function (context: Context, eventGridEvent: IEventGridEvent): Promise<void> {
     if (eventGridEvent && eventGridEvent.data && eventGridEvent.data.url) {
@@ -38,9 +41,6 @@ const eventGridTrigger: AzureFunction = async function (context: Context, eventG
         if (eventType === EVENT_TYPE && isCorrectDataType) {
             const [mapId, fileId] = fileUrl.split('/').slice(3);
             if (mapId && mapId.length === 36 && fileId && fileId.length === 36) {
-                const pool = new Pool({
-                    connectionString: process.env.PG_CONNECTION_STRING,
-                });
                 await pool.query('update public."File" set "storeLocation" = $1 where "id" = $2', [fileUrl, fileId]);
                 context.log(`Bound ${fileUrl} to ${fileId}`);
             }

@@ -26,7 +26,8 @@
     "pg-hstore": "^2.3.2",
     "postgraphile": "^4.4.0",
     "postgraphile-core": "^4.4.0",
-    "sequelize": "^5.8.6"
+    "sequelize": "^5.8.6",
+    "steamapi": "^2.0.7"
   },
   "devDependencies": {
     "@azure/functions": "^1.0.3",
