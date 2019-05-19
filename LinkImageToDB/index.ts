@@ -35,7 +35,7 @@ interface IEventGridEvent {
 const EVENT_TYPE = 'Microsoft.Storage.BlobCreated';
 const pool = new Pool({
     connectionString: process.env.PG_ADMIN_STRING,
-});
+}); // TODO - create and release pool better? https://node-postgres.com/api/pool
 
 const eventGridTrigger: AzureFunction = async function (context: Context, eventGridEvent: IEventGridEvent): Promise<void> {
     if (eventGridEvent && eventGridEvent.data && eventGridEvent.data.url) {

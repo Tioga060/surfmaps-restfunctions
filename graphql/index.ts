@@ -1,13 +1,6 @@
 import { AzureFunction, Context, HttpRequest } from "@azure/functions"
 import { execute, IQuery } from './postgraphile';
-
-const getJWT = (cookieString: string) => {
-    const cookies = cookieString.split('; ');
-    const tokenCookie = cookies.find((cookie) => (new RegExp('^token=*').test(cookie)));
-    return tokenCookie
-        ? tokenCookie.split('token=')[1]
-        : '';
-}
+import { getJWT } from '../shared';
 
 const schemaName = 'public';
 
