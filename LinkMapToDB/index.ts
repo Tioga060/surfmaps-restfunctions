@@ -41,8 +41,12 @@ const eventGridTrigger: AzureFunction = async function (context: Context, eventG
         if (eventType === EVENT_TYPE && isCorrectDataType) {
             const [mapId, fileId] = fileUrl.split('/').slice(3);
             if (mapId && mapId.length === 36 && fileId && fileId.length === 36) {
-                await pool.query('update public."File" set "storeLocation" = $1 where "id" = $2', [fileUrl, fileId]);
-                context.log(`Bound ${fileUrl} to ${fileId}`);
+                const result = await pool.query('update public."File" set "storeLocation" = $1 where "id" = $2 returning *;', [fileUrl, fileId]);
+                if (!!result.rowCount) {
+                    context.log(`Bound ${result.rows[0].storeLocation} to ${result.rows[0].id}`);
+                } else {
+                    context.log(`Error while attempting to bind ${fileUrl} to ${fileId}`);
+                }
             }
         }
     }
