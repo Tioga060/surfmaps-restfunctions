@@ -4,7 +4,7 @@ import {Pool, PoolClient} from 'pg';
 
 const steam = new SteamAPI(process.env.STEAM_API_KEY);
 const pool = new Pool({
-    connectionString: process.env.PG_CONNECTION_STRING,
+    connectionString: process.env.PG_QUERY_STRING,
 });
 
 interface IUserSummary {

@@ -34,7 +34,7 @@ interface IEventGridEvent {
 
 const EVENT_TYPE = 'Microsoft.Storage.BlobCreated';
 const pool = new Pool({
-    connectionString: process.env.PG_CONNECTION_STRING,
+    connectionString: process.env.PG_ADMIN_STRING,
 });
 
 const eventGridTrigger: AzureFunction = async function (context: Context, eventGridEvent: IEventGridEvent): Promise<void> {

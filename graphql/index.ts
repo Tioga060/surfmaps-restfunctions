@@ -21,7 +21,7 @@ const httpTrigger: AzureFunction = async function (context: Context, req: HttpRe
             }
         });
         const results = await Promise.all(queries.map((query) => (
-            execute(jwtToken, query, process.env.PG_CONNECTION_STRING, schemaName)
+            execute(jwtToken, query, schemaName)
         )));
         context.res = {
             body: results,
@@ -32,7 +32,6 @@ const httpTrigger: AzureFunction = async function (context: Context, req: HttpRe
             body: await execute(
                 jwtToken,
                 query,
-                process.env.PG_CONNECTION_STRING,
                 schemaName),
         }
     } else {

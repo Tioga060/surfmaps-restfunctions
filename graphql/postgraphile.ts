@@ -1,8 +1,9 @@
-import { createPostGraphQLSchema, withPostGraphQLContext } from 'postgraphile';
+import { createPostGraphileSchema, withPostGraphileContext } from 'postgraphile';
 import { graphql, ExecutionResult } from 'graphql';
 import { Pool } from 'pg';
 
 const GQLSchemaLocation = `${__dirname}/../schema.graphql`;
+const pgPool = new Pool({connectionString: process.env.PG_QUERY_STRING});
 
 const performQuery = async (
     pgPool: Pool,
@@ -11,13 +12,13 @@ const performQuery = async (
     variables: any,
     jwtToken: string,
 ) => {
-    return await withPostGraphQLContext({
+    return await withPostGraphileContext({
         pgPool,
         jwtToken,
         jwtSecret: process.env.JWT_SECRET, // TODO
     }, async (context) => {
         return await graphql(
-            schema,
+            schema, // TODO - greenlight queries
             query,
             null,
             {...context},
@@ -39,11 +40,9 @@ export interface IQuery {
 export const execute = async (
     jwtToken: string,
     query: IQuery,
-    connectionString: string,
     schemaName: string = "public",
 ) => {
-    const pgPool = new Pool({connectionString});
-    const schema = await createPostGraphQLSchema(undefined, schemaName, {
+    const schema = await createPostGraphileSchema(pgPool, schemaName, {
         classicIds: true,
         dynamicJson: true,
         jwtSecret: process.env.JWT_SECRET, // TODO

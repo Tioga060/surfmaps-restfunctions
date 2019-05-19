@@ -1,5 +1,5 @@
 import { AzureFunction, Context } from "@azure/functions"
-import { createPostGraphQLSchema } from 'postgraphile';
+import { createPostGraphileSchema } from 'postgraphile';
 import { Pool } from 'pg';
 
 const GQLSchemaLocation = `${__dirname}/../schema.graphql`;
@@ -12,8 +12,8 @@ const timerTrigger: AzureFunction = async function (context: Context, myTimer: a
     {
         context.log('Timer function is running late!');
     }
-    const pgPool = new Pool({connectionString: process.env.PG_CONNECTION_STRING});
-    await createPostGraphQLSchema(pgPool, SchemaName, {
+    const pgPool = new Pool({connectionString: process.env.PG_ADMIN_STRING});
+    await createPostGraphileSchema(pgPool, SchemaName, {
         classicIds: true,
         dynamicJson: true,
         jwtSecret: process.env.JWT_SECRET, // TODO
